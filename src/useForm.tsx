@@ -1,5 +1,4 @@
 import { FC, useState, Fragment, useRef, useLayoutEffect, useEffect } from "react";
-import { NestedKeys } from "advanced-types";
 import { cloneObject, getNestedValueFromString, isEmailValid, resetFieldObject, sleep } from "./functions";
 import React from "react";
 import { v4 as uuidv4 } from 'uuid';
@@ -12,11 +11,11 @@ export type SetForm<T> = (key: keyof T, value: T[keyof T]) => void;
 
 export type FormReturnType<T extends object> = {
   form: Partial<Form<T>>;
-  setForm: (key: NestedKeys<T, "/", 5>, value: any) => void;
+  setForm: (key: string, value: any) => void;
   setAllForm: (form: T) => void;
   Field: FC<InputProps<T>>
-  propsField: (name: NestedKeys<T, "/", 5>, type: React.InputHTMLAttributes<HTMLInputElement>["type"]) => object,
-  handleError: (key: NestedKeys<T, "/", 5>, value: string | undefined, autoScroll: boolean) => void;
+  propsField: (name: string, type: React.InputHTMLAttributes<HTMLInputElement>["type"]) => object,
+  handleError: (key: string, value: string | undefined, autoScroll: boolean) => void;
   submit: (callback: (form: Form<T>) => void) => void;
   errors: Partial<{ [x in keyof T]: string | undefined }> | Form<T>;
 };
@@ -31,7 +30,7 @@ export interface FormValidationItem<T> {
 }
 
 // @ts-ignore
-export type FormValidationObject<T extends object> = { [K in NestedKeys<T, "/", 5>]?: FormValidationItem<T> };
+export type FormValidationObject<T extends object> = { [K in string]?: FormValidationItem<T> };
 
       /**
  * Custom-hook for form.
@@ -44,7 +43,7 @@ export type FormValidationObject<T extends object> = { [K in NestedKeys<T, "/", 
 
 export const useForm = <T extends object>(
   initialValue: Form<T>,
-  validators?: { [K in NestedKeys<T, "/",5>]?: FormValidationItem<any> },
+  validators?: { [K in string]?: FormValidationItem<any> },
   isScrollToError?: boolean
 ) => {
   const id = useRef(uuidv4());
@@ -58,8 +57,8 @@ export const useForm = <T extends object>(
   );
 
 
-  const propsField = (name: NestedKeys<T, "/", 5>, type: React.InputHTMLAttributes<HTMLInputElement>["type"] = "string") => {
-  console.log("🚀 ~ file: useForm.tsx ~ line 73 ~ propsField ~ name", name)
+  const propsField = (name: string, type: React.InputHTMLAttributes<HTMLInputElement>["type"] = "string") => {
+
         // @ts-ignore
     const valueInput = getNestedValueFromString(name, form);
     const container = document.getElementById(id.current);
@@ -68,7 +67,7 @@ export const useForm = <T extends object>(
     const container = document.getElementById(id.current);
     
     (container!.querySelector(`[name="${name}"]`) as any).value = value;
-    console.log('ciao', container!.querySelector(`[name="${name}"]`));
+
       },type, defaultValue: valueInput}
 }
 
@@ -104,7 +103,8 @@ const Form = ({children, ...props}: DivProps) => {
 
 
 
-  const handleError = (key: NestedKeys<T, "/", 5>, value: string | undefined, autoScroll: boolean = true) => {
+//   const handleError = (key: NestedKeys<T, "/", 5>, value: string | undefined, autoScroll: boolean = true) => {
+  const handleError = (key: string, value: string | undefined, autoScroll: boolean = true) => {
     // ts-ignore
     const splittedKey = (key as string).split("/");
     if (splittedKey.length === 1) {
@@ -136,7 +136,7 @@ const Form = ({children, ...props}: DivProps) => {
     setForm(allForm);
   };
 
-  const onChange = (key: NestedKeys<T, "/", 5>, value: any, debounce = true) => {
+  const onChange = (key: string, value: any, debounce = false) => {
   if(debounce) {sleep(70).then(() => {
     setForm((prev: any) => {
       //@ts-ignore
@@ -179,7 +179,7 @@ const Form = ({children, ...props}: DivProps) => {
     // @ts-ignore
     if (validators) {
       valids = Object.keys(validators).map((key) => {
-        const currentKey = key as NestedKeys<T, "/", 5>;
+        const currentKey = key as keyof typeof validators ;
         // @ts-ignore
         const currentField = getNestedValueFromString(currentKey, form);
         const validator = validators[key as keyof typeof validators];

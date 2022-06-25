@@ -1,3 +1,5 @@
+import { InputHTMLAttributes } from "react";
+
 export const isEmailValid = (email: string) =>
   email.match(
     // eslint-disable-next-line
@@ -35,5 +37,35 @@ export const resetFieldObject = (obj: Record<any, any>) => {
 export const cloneObject = (obj: Record<any, any>) =>
   JSON.parse(JSON.stringify(obj));
 
-  export   const sleep = (ms:number) => new Promise(r => setTimeout(r, ms));
+export const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
+export const generatePropsInput = (
+  type: InputHTMLAttributes<HTMLInputElement>["type"],
+  value: any,
+  formValue: any
+) => {
+  switch (type) {
+    case "checkbox":
+      return { defaultChecked: value };
+    case "radio":
+      return formValue === value ?  { defaultChecked: true } : {};
+    default:
+      return { defaultValue: value };
+  }
+};
+export const editValueInputOnSetForm = (
+  type: InputHTMLAttributes<HTMLInputElement>["type"] | null,
+  element: any,
+  value: any
+) => {
+  switch (type) {
+    case null:
+      break;
+    case "checkbox":
+       element.checked = value;
+       break;
+    default:
+      element.value = value;
+      break;
+  }
+};
