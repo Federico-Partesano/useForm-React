@@ -13,7 +13,6 @@ export type FormReturnType<T extends object> = {
   form: Partial<Form<T>>;
   setForm: (key: string, value: any) => void;
   setAllForm: (form: T) => void;
-  Field: FC<InputProps<T>>
   propsField: (name: string, type: React.InputHTMLAttributes<HTMLInputElement>["type"]) => object,
   handleError: (key: string, value: string | undefined, autoScroll: boolean) => void;
   submit: (callback: (form: Form<T>) => void) => void;
@@ -58,7 +57,6 @@ export const useForm = <T extends object>(
 
 
   const propsField = (name: string, type: React.InputHTMLAttributes<HTMLInputElement>["type"] = "string") => {
-
         // @ts-ignore
     const valueInput = getNestedValueFromString(name, form);
     const container = document.getElementById(id.current);
@@ -67,7 +65,6 @@ export const useForm = <T extends object>(
     const container = document.getElementById(id.current);
     
     (container!.querySelector(`[name="${name}"]`) as any).value = value;
-
       },type, defaultValue: valueInput}
 }
 
@@ -124,7 +121,7 @@ const Form = ({children, ...props}: DivProps) => {
   };
   if(autoScroll && isScrollToError){
     setTimeout(() => {
-    const el = document.querySelectorAll(`[class~=is-invalid]`)
+    const el = document.querySelectorAll(`[class~=is-invalid-${id.current}]`)
     if(el.length){
       el[0].scrollIntoView({behavior: "smooth", block: "center", inline: "nearest"});
     }
@@ -195,7 +192,7 @@ const Form = ({children, ...props}: DivProps) => {
             (typeof currentField === "undefined" ||
               (typeof currentField === "string" && !isEmailValid(currentField)))
           ) {
-            handleError(currentKey, validator.required);
+            handleError(currentKey, validator.invalidEmail);
             return false;
           } else if (
             validator.containSpace &&
