@@ -31,7 +31,7 @@ function App() {
     // you can use the custom function for custom validations, the argument is the field value
     checkbox: { custom: (value) => !value ? "value is must true" : "" },
   };
-
+  // You can use totally custom components for the form
   const CustomInput: FC<{setForm: ISetForm<typeof initialValueForm>, value: any}> = ({setForm, value}) => {
     return <input onChange={({target: {value}}) => setForm("text", value )} value={value}></input>
   }
@@ -39,7 +39,7 @@ function App() {
   return (
     <form className="App">
       <div style={{ display: "inline-flex", flexDirection: "column" }}>
-      {/* // yYu can use autoScrollOnError to automatically scroll to an error in a form field */}
+      {/* You can use autoScrollOnError to automatically scroll to an error in a form field */}
         <Form initialValue={initialValueForm} validators={validators} autoScrollOnError={true}>
           {({ Field, TextArea, setForm, form, Error, submit, errors, Label }) => {            
             return (
@@ -51,7 +51,7 @@ function App() {
                 </div>
                 <div>
                   <Field name="text" className="..." style={{color: "red"}} placeholder="text field" />
-                  {/* you can also use a custom component */}
+                  {/* You can also use a custom component */}
                   <CustomInput setForm={setForm} value={form.text}></CustomInput>
                   <Error name="text" />
                   <Field name="emailInput" type={"text"} placeholder="email field"
@@ -67,7 +67,7 @@ function App() {
                 <div onClick={() => setForm("checkbox", !form.checkbox)}>
                   change value checkbox
                 </div>
-                {/* invoke the function handle submit only if there are no errors in the form */}
+                {/* Form Invoke the function handleSubmit only if there are no errors in the form */}
                 <div onClick={() => submit((form) => handleSubmit(form))}>
                   submit
                 </div>
@@ -79,8 +79,5 @@ function App() {
     </form>
   );
 }
-
 export default App;
-
-
 ```
